@@ -1,13 +1,13 @@
-#+TITLE: ppx_version
+# ppx_version
 
-=ppx_version= contains OCaml extension points (ppxs) meant to assure
-the stability of types and their =Bin\_prot= serializations. With such
+`ppx_version` contains OCaml extension points (ppxs) meant to assure
+the stability of types and their `Bin_prot` serializations. With such
 stability, data can be persisted and restored, or communicated over
 networks reliably, even as software evolves.
 
 To define a stable type:
 
-#+begin_src ocaml
+```ocaml
 [%%versioned
   module Stable = struct
     module V1 = struct
@@ -16,7 +16,7 @@ To define a stable type:
       let to_latest (n,s) = (n,s)
     end
   end]
-#+end_src
+```
 
 The use of `%%versioned` generates a `Bin_prot` typeclass instance in
 the same way that annotating the type with `[@@deriving bin_io]` would
@@ -27,9 +27,9 @@ modules need to be updated. For a module `Vn`, the `to_latest` function
 has type `Vn.t -> Latest.t`.
 
 The `Stable` module contains the generated function
-#+begin_src ocaml
+```ocaml
 val deserialize_binary_opt : Bin_prot.Common.buf -> Stable.Latest.t option
-#+end_src
+```
 Given a buffer containing a serialization of a type from any of the
 versioned modules, this function will return an instance of `Stable.Latest.t`.
 The return type is an option, because the serialization may be from an
@@ -48,7 +48,7 @@ The variant `%%versioned_binable` can be used when the functor
 Another place you may want stable types is in the definition of
 Jane Street `async_rpc_kernel` versioned RPC calls. The
 idiom is:
-#+begin_src ocaml
+```ocaml
 module V1 = struct
   module T = struct
     type query = int [@@deriving bin_io, version {rpc}]
@@ -67,7 +67,7 @@ module V1 = struct
   include T
   include Register (T)
   end
-#+end_src
+```
 See Jane Street's `Async` library for details on how to define
 and use versioned RPC calls.
 
