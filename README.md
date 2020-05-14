@@ -45,6 +45,18 @@ The variant `%%versioned_binable` can be used when the functor
 `Binable.Of_binable` (or `Of_binable1`, `Of_binable2`), or
 `Binable.Of_stringable` are used to provide serialization.
 
+A stable type in a signature:
+```ocaml
+[%%versioned:
+  module Stable : sig
+    module V1 : sig
+	  type t
+    end
+  end]
+```
+A `val` declaration for `deserialize_binary_opt` and the
+`Latest` module alias are generated.
+
 Another place you may want stable types is in the definition of
 Jane Street `async_rpc_kernel` versioned RPC calls. The
 idiom is:
