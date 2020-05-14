@@ -91,6 +91,14 @@ stable-versioned modules. In other settings, use `Stable.Latest.t`.
 Similarly, modules passed as arguments to functions cannot
 be a specific-versioned module; use `Stable.Latest` instead.
 
+A serializable type may not need to be versioned, because the
+serialization is neither persisted nor shared with different software.
+In that case, annotate the type with `deriving bin_io_unversioned`.
+
 The linter does not examine code in tests that use the `let%test`,
 `let%test_unit` or `let%test_module` forms used with the Jane Street
 `ppx_inline_tests` package. Anything goes in tests.
+
+A serializable type may not need to be versioned, because the
+serialization is neither persisted nor shared with different software.
+In that case, annotate the type with `[@@deriving bin_io_unversioned]`.
