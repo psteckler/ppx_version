@@ -38,8 +38,15 @@ unknown version.
 The variant `%%versioned_asserted` can be used when the types used in
 the definition are not themselves versioned, as when they're
 from some external library. In that case, you're required to
-provide a `Tests` module. You should provide tests that verify that
-serializations of the types in the versioned module don't change.
+provide a `Tests` module, where you should provide tests that verify that
+serializations of the types for each versioned module don't change.
+The library provides a function `check_serialization` for that purpose:
+```ocaml
+let%test "V1 serialization test" =
+  let value : M.Stable.V1.t = ... in
+  let known_good_hash : string = ... in
+  check_serialization (module M.Stable.V1) value known_good_hash
+```
 
 The variant `%%versioned_binable` can be used when the functor
 `Binable.Of_binable` (or `Of_binable1`, `Of_binable2`), or
@@ -55,7 +62,7 @@ A stable type in a signature:
   end]
 ```
 A `val` declaration for `deserialize_binary_opt` and the
-`Latest` module alias are generated.
+`Latest` module alias are generated for the signature.
 
 Another place you may want stable types is in the definition of
 Jane Street `async_rpc_kernel` versioned RPC calls. The
@@ -111,3 +118,18 @@ The linter does not examine code in tests that use the `let%test`,
 A serializable type may not need to be versioned, because the
 serialization is neither persisted nor shared with different software.
 In that case, annotate the type with `[@@deriving bin_io_unversioned]`.
+
+## Printing versioned types
+
+To assure that stable-versioned types are stable, in fact, it's
+useful detect changes to them. For that purpose, the library offers
+the ability to print out versioned types. You can use that facility
+in your build system to detect changes to types.
+
+Run the program `print_versioned_types.exe` on an OCaml source file.
+For each versioned type in the file, the program prints to
+the console `module_path:type_definition`, all on one line.
+Example output:
+```
+M.Stable.V1:type t = { x: N.Stable.V1.t; y: W.Stable.V2.t }
+```
