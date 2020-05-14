@@ -1,0 +1,13 @@
+(library
+ (name ppx_version)
+ (public_name ppx_version)
+ (kind ppx_deriver)
+ (modules (:standard \ print_versioned_types))
+ (libraries compiler-libs.common ppxlib ppx_deriving.api ppx_bin_prot core_kernel)
+ (preprocessor_deps ../../config.mlh)
+ (preprocess (pps ppxlib.metaquot ppx_optcomp)))
+
+(executable
+ (name print_versioned_types)
+ (modules print_versioned_types)
+ (libraries ppx_version))

@@ -49,7 +49,7 @@ let%test "V1 serialization test" =
 ```
 
 The variant `%%versioned_binable` can be used when the functor
-`Binable.Of_binable` (or `Of_binable1`, `Of_binable2`), or
+`Binable.Of_binable` (or `Of_binable1`, `Of_binable2`, `Of_binable3`), or
 `Binable.Of_stringable` are used to provide serialization.
 
 A stable type in a signature:
@@ -133,3 +133,26 @@ Example output:
 ```
 M.Stable.V1:type t = { x: N.Stable.V1.t; y: W.Stable.V2.t }
 ```
+
+## Printing binable functors
+
+Stable-versioned types can use functors like `Binable.Of_binable`
+to provide serialization code. If the arguments to such functors
+change, serializations may change.
+
+Run the program `print_binable_functors.exe` on source files
+to print each use of these functors, so you can detect changes.
+Example output:
+```
+M.Stable.V1:Binable.Of_binable (X.Stable.V1) (Y)
+```
+
+The relevant functors are:
+
+ - `Binable.Of_binable`
+ - `Binable.Of_binable1`
+ - `Binable.Of_binable2`
+ - `Binable.Of_binable3`
+ - `Binable.Of_sexpable`
+ - `Binable.Of_stringable`
+ - `Bin_prot.Utils.Make_binable`
