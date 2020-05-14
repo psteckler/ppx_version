@@ -83,7 +83,7 @@ One linter rule is that stable-versioned modules cannot be contained
 in the result of a functor application.  The reason is that the types
 might depend on the functor arguments, so that distinct functor
 applications yield different types with different serializations.
-Exception: Functors that take no module arguments are allowed to return
+Functors that take no module arguments are allowed to return
 stable-versioned modules.
 
 Another rule is that types from stable-versioned modules with a
