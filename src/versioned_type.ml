@@ -1,6 +1,3 @@
-[%%import
-"/src/config.mlh"]
-
 (* versioned_types.ml -- static enforcement of versioned types via ppx *)
 
 (* If the dune profile defines "print_versioned_types" to be true, this deriver
@@ -71,12 +68,17 @@
 
 open Core_kernel
 open Ppxlib
+open Versioned_util
 
 let deriver = "version"
 
-[%%if
-print_versioned_types]
+let printing_ref = ref false
 
+let set_printing () = printing_ref := true
+
+let unset_printing () = printing_ref := false
+
+(* code related to printing *)
 let contains_deriving_bin_io (attrs : attributes) =
   match
     List.find attrs ~f:(fun ({txt; _}, _) -> String.equal txt "deriving")
@@ -145,14 +147,7 @@ let print_type ~options:_ ~path type_decls =
  *)
 let gen_empty_sig ~options:_ ~path:_ _type_decls = []
 
-let () =
-  Ppx_deriving.(
-    register
-      (create deriver ~type_decl_str:print_type () ~type_decl_sig:gen_empty_sig))
-
-[%%else]
-
-open Versioned_util
+(* end of printing-related code *)
 
 type generation_kind = Plain | Wrapped | Rpc
 
@@ -612,10 +607,23 @@ let generate_val_decls_for_type_decl_sig ~options ~path:_ type_decls =
   let numbered = check_for_option "numbered" options in
   generate_val_decls_for_type_decl type_decl ~numbered
 
+let choose_deriver ~printing ~nonprinting =
+  if !printing_ref then printing
+  else nonprinting
+
+let type_decl_str ~options ~path ty_decls =
+  let f = choose_deriver ~printing:print_type
+      ~nonprinting:generate_let_bindings_for_type_decl_str
+  in
+  f ~options ~path ty_decls
+
+let type_decl_sig  ~options ~path ty_decls =
+  let f = choose_deriver ~printing:gen_empty_sig
+      ~nonprinting:generate_val_decls_for_type_decl_sig
+  in
+  f ~options ~path ty_decls
+
 let () =
   Ppx_deriving.(
     register
-      (create deriver ~type_decl_str:generate_let_bindings_for_type_decl_str
-         ~type_decl_sig:generate_val_decls_for_type_decl_sig ()))
-
-[%%endif]
+      (create deriver ~type_decl_str ~type_decl_sig ()))

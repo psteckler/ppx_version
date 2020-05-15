@@ -1,3 +1,5 @@
-(* driver.ml -- ppx_coda as executable *)
+(* print_versioned_types.ml *)
 
-let () = Ppxlib.Driver.standalone ()
+let () =
+  Ppx_version.Versioned_type.set_printing ();
+  Ppxlib.Driver.standalone ()
